@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.5)
+project( cam_eCAL )
+find_package( OpenCV REQUIRED )
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+add_executable( cam_eCAL main.cpp )
+target_link_libraries( cam_eCAL ${OpenCV_LIBS} )
