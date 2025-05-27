@@ -57,6 +57,7 @@ void publish_camjpg(const cv::Mat &frame) {
     wcamj.set_payload(reinterpret_cast<char*>(jpegBuffer.data()), jpegBuffer.size());
     wcamj.set_frame_id(++frameid);
     wcamj.set_size(size); // w x h
+    wcamj.set_timestamp(eCAL::Time::GetMicroSeconds());
     publisher_wcamr.Send(wcamj);
 };
 
@@ -76,13 +77,21 @@ void publish_camraw(const cv::Mat &frame) {
 
 int main(int argc, char** argv)
 {
-    printf("cam_eCAL <#device>\n");
+    printf("cam_eCAL <#device> <width> <height>\n");
     int device = 0;
+    int w = 0;
+    int h = 0;
     if (argc > 1) {
         device = atoi(argv[1]);
         printf("#device: %d\n", device);
     } else {
         printf("no #device specified, using default port 0\n");
+    }
+    if (argc > 2) {
+        w = atoi(argv[2]);
+    }
+    if (argc > 3) {
+        h = atoi(argv[3]);
     }
 
     init_eCAL(argc, argv);
@@ -90,8 +99,8 @@ int main(int argc, char** argv)
     VideoCapture cap(device); // open the camera <device>
     if(!cap.isOpened())  // check if we succeeded
         return -1;
-//    cap.set(cv::CAP_PROP_FRAME_WIDTH, 1024);
-//    cap.set(cv::CAP_PROP_FRAME_HEIGHT,768);
+    cap.set(cv::CAP_PROP_FRAME_WIDTH,  w);
+    cap.set(cv::CAP_PROP_FRAME_HEIGHT, h);
 
     Mat edges;
     for(;;)
