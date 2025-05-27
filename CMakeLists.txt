@@ -14,10 +14,25 @@ set(protobuf_files
     ${CMAKE_CURRENT_SOURCE_DIR}/proto/webcam.proto
 )
 
+############
+# publisher
+############
+
 add_executable(${PROJECT_NAME} main.cpp)
 
 # compile protos
 PROTOBUF_TARGET_CPP(${PROJECT_NAME} ${CMAKE_CURRENT_SOURCE_DIR}/proto/ ${protobuf_files})
 
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS} eCAL::core protobuf::libprotobuf)
+
+############
+# subscriber
+############
+
+add_executable(show_jpg show.cpp)
+
+# compile protos
+PROTOBUF_TARGET_CPP(show_jpg ${CMAKE_CURRENT_SOURCE_DIR}/proto/ ${protobuf_files})
+
+target_link_libraries(show_jpg ${OpenCV_LIBS} eCAL::core protobuf::libprotobuf)
 
