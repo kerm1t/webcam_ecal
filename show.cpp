@@ -50,9 +50,10 @@ void webcam_jpg_callback(const pb::webcam::webcam_raw& wcamj)
    cv::Mat frame = cv::imdecode(jpegBuffer, cv::IMREAD_COLOR);
 
    frameid = wcamj.frame_id();
-   cv_txtout(frame, 10,40,  "frame "+ std::to_string(frameid) + ", size " + std::to_string(wcamj.size()));
-   cv_txtout(frame, 10,70,  std::to_string(frame.cols) + "x" + std::to_string(frame.rows));
-   cv_txtout(frame, 10,100, std::to_string(frame.channels()) + " chans");
+   cv_txtout(frame, 10,40,  "ts " + std::to_string(wcamj.timestamp()));
+   cv_txtout(frame, 10,70,  "frame " + std::to_string(frameid) + ", size " + std::to_string(wcamj.size()));
+   cv_txtout(frame, 10,100, std::to_string(frame.cols) + "x" + std::to_string(frame.rows));
+   cv_txtout(frame, 10,130, std::to_string(frame.channels()) + " chans");
 
    if (frame.empty()) {
       printf("Failed to decode JPEG image\n");
