@@ -1,0 +1,60 @@
+// This message holds a collection of N-dimensional points, which may
+// contain additional information such as normals, intensity, etc. The
+// point data is stored as a binary blob, its layout described by the
+// contents of the "fields" array.
+
+// The point cloud data may be organized 2d (image-like) or 1d
+// (unordered). Point clouds organized as 2d images may be produced by
+// camera depth sensors such as stereo or time-of-flight.
+
+syntax = "proto3";
+
+package pb.sensor_msgs;
+
+import "header_pointcloud.proto";
+import "pointfield.proto";
+
+message PointCloud2
+{
+  // 2D structure of the point cloud. If the cloud is unordered, height is 1 and width is the length of the point cloud.
+  std_msgs.Header header = 1;
+  uint32 height = 2;
+  uint32 width = 3;				// Number of points actually received from the receiver.
+  string sensorIP = 4;
+
+  repeated sensor_msgs.PointField fields = 5;  // Describes the channels and their layout in the binary data blob.
+
+  bool is_bigendian = 6;  // Is this data bigendian?
+  uint32 point_step = 7;  // Length of a point in bytes
+  uint32 row_step = 8;  // Length of a row in bytes
+  bytes data = 9;  // Actual point data, size is (row_step*height)
+  bool is_dense = 10;  // True if there are no invalid points
+
+  uint32 telemetry_revision = 11;     // Telemetry Revision
+  float board_temperature_celsius = 12;       // board Temperature
+  float laser_temperature_celsius = 13;       // Laser Temperature
+  float scanhead_temperature_celsius = 14;    // Scanhead Temperature
+  float scanhead_relative_humidity_percent = 15; // Scanhead Relative Humidity
+  float scanhead_window_temperature_celsius = 16; // Scanhead Window Temperature
+  float scanhead_window_relative_humidity = 17; // Scanhead Window Relative Humidity
+  float board_temperature_near_ADC_celsius = 18; // board Temperature near ADC
+  float adc_temperature_in_celsius = 19;		  // ADC Temperature in Celsius
+
+  string scan_pattern = 20;
+  string num_multiple_echoes = 21;
+  string multi_echo_mode = 22;
+
+  uint32 skirt_thresh_near_high_gain = 23;	// Threshold for near field high gain
+  uint32 skirt_thresh_near_low_gain = 24;	// Threshold for near field low gain
+  uint32 skirt_thresh_far_high_gain = 25;	// Threshold for far field high gain
+  uint32 skirt_thresh_far_low_gain = 26;	// Threshold for far field low gain
+
+  string pose_x = 27;
+  string pose_y = 28;
+  string pose_z = 29;
+  string pose_yaw = 30;
+  string pose_pitch = 31;
+  string pose_roll = 32;
+  
+  uint64 num_expected_points = 33;	// Number of points expected from the LIDAR receiver.
+}

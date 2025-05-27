@@ -1,0 +1,26 @@
+syntax = "proto3";
+
+package pb.webcam;
+
+message webcam_raw
+{
+  int32 frame_id = 1;
+  bytes payload = 2;
+  int32 size = 3;
+}
+
+message webcam_compressed
+{
+  int32 frame_id = 1;
+  bytes payload = 2;
+  int32 size = 3;
+  int32 encoder = 4;
+  uint32 width = 5;
+  uint32 height = 6;
+  uint32 bits = 7;
+}
+
+message webcam_info
+{
+  double GeneSys_ID = 2;
+}

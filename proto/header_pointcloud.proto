@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+package pb.std_msgs;
+
+import "time.proto";
+
+message Header
+{
+  uint32                  seq      = 1;
+  builtin_interfaces.Time stamp    = 2;
+  string                  frame_id = 3;
+}
