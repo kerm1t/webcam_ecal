@@ -1,3 +1,12 @@
+/**********************************************
+ * subscribe to eCAL webcam frames
+ * and visualize
+ * payload: jpg compressed
+ * tested on Ubuntu 20.04
+ * v1.0
+ * 5-27-2025
+*/
+
 #include "opencv2/opencv.hpp"
 
 using namespace cv;
@@ -13,12 +22,22 @@ using namespace cv;
 
 #include <vector>
 #include <mutex>
+#include <thread>
 
 eCAL::protobuf::CSubscriber<pb::webcam::webcam_raw> subscriber_wcamr;
 
 int frameid;
 
 std::mutex callback_mutex; // Declare a global mutex
+
+void cv_txtout(cv::Mat &frame, int x, int y, std::string s) {
+   cv::putText(frame,s, // text
+      cv::Point(x, y), // top-left position
+      cv::FONT_HERSHEY_DUPLEX,
+      1.0,
+      CV_RGB(118, 185, 0), // font color
+      2);
+}
 
 void webcam_jpg_callback(const pb::webcam::webcam_raw& wcamj)
 {
@@ -28,18 +47,23 @@ void webcam_jpg_callback(const pb::webcam::webcam_raw& wcamj)
    printf("webcam_jpg_callback: frame %d --> size=%d\n", wcamj.frame_id(), wcamj.size());
    // Convert the JPEG payload back to a cv::Mat
    std::vector<uchar> jpegBuffer(wcamj.payload().begin(), wcamj.payload().end());
-   printf("1\n");
    cv::Mat frame = cv::imdecode(jpegBuffer, cv::IMREAD_COLOR);
-   printf("2\n");
+
+   frameid = wcamj.frame_id();
+   cv_txtout(frame, 10,40,  "frame "+ std::to_string(frameid) + ", size " + std::to_string(wcamj.size()));
+   cv_txtout(frame, 10,70,  std::to_string(frame.cols) + "x" + std::to_string(frame.rows));
+   cv_txtout(frame, 10,100, std::to_string(frame.channels()) + " chans");
+
    if (frame.empty()) {
       printf("Failed to decode JPEG image\n");
       return;
    } else {
       printf("frame %d --> rows=%d, cols=%d, chan's=%d\n",frameid, frame.rows, frame.cols, frame.channels());
    }
+
    // Display the frame
-   imshow("webcam->eCAL", frame);
-   printf("3\n");
+   imshow("eCAL jpg-viewer", frame);
+
    waitKey(1); // Allow OpenCV to process the window events
 }
 
@@ -75,6 +99,7 @@ int main(int argc, char** argv)
     // Just don't exit
     while (eCAL::Ok()) {
         if(waitKey(30) >= 0) break;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
     exit_eCAL(); // finalize eCAL API
