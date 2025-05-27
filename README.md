@@ -17,8 +17,15 @@ cd build
 cmake ..
 make
 
-./cam_eCAL <device> // start the publisher, device = 0,...,3
-./show_jpg          // start the viewer
+./cam_eCAL [<device> <widht> <height>] // start the publisher
+                                       // optional: device = 0, ... , 3
+                                       //           img width e.g. 1280
+                                       //           img height e.g. 720
+```
+Open a new Terminal
+```
+./show_jpg                             // start the viewer
 ```
 ## Output
-![Screenshot from 2025-05-27 17-07-44](https://github.com/user-attachments/assets/79ef4032-7974-47e9-953a-7ebcf6aed8ee)
+![Screenshot from 2025-05-27 18-06-05](https://github.com/user-attachments/assets/285e8346-18b2-4a5d-bf9f-28fe8bc7d365)
+
