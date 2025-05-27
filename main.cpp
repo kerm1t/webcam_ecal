@@ -1,3 +1,11 @@
+/**********************************************
+ * publish webcam frames to eCAL
+ * payload: jpg compressed
+ * tested on Ubuntu 20.04
+ * v1.0
+ * 5-27-2025
+*/
+
 #include "opencv2/opencv.hpp"
 
 using namespace cv;
@@ -20,7 +28,7 @@ void init_eCAL(int argc, char** argv) {
   // Initialize eCAL
   eCAL::Initialize(argc, argv, "Webcam->eCAL");
   // create publisher
-//  publisher_wcamr = eCAL::protobuf::CPublisher<pb::webcam::webcam_raw>("WEBCAM_RAW");
+  // put all jpg into the raw payload, jpg contains all info as w, h, channels etc.
   publisher_wcamr = eCAL::protobuf::CPublisher<pb::webcam::webcam_raw>("webcam_jpg");
   printf("Ecal publisher created\n");
   // set eCAL state to healthy (--> eCAL Monitor)
@@ -86,14 +94,11 @@ int main(int argc, char** argv)
 //    cap.set(cv::CAP_PROP_FRAME_HEIGHT,768);
 
     Mat edges;
-    namedWindow("webcam->eCAL",1);
     for(;;)
     {
         Mat frame;
         cap >> frame; // get a new frame from camera
-///        imshow("webcam->eCAL", frame);
 
-//        publish_camraw(frame);
         publish_camjpg(frame);
 
         if(waitKey(30) >= 0) break;
