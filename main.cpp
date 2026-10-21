@@ -75,6 +75,15 @@ void publish_camraw(const cv::Mat &frame) {
 // <------- eCAL ---------->
 
 
+/* ------------------------------------------------
+   How To Run:
+ 1) capture + publisher: build
+ 2) visualizer (incl. subscriber): build/show_jpg
+ 
+   How to get available resolutions for USB camera:
+   > sudo apt install v4l-utils
+   > v4l2-ctl -d /dev/video0 --list formats-ext
+   ------------------------------------------------ */
 int main(int argc, char** argv)
 {
     printf("cam_eCAL <#device> <width> <height>\n");
@@ -93,6 +102,9 @@ int main(int argc, char** argv)
     if (argc > 3) {
         h = atoi(argv[3]);
     }
+
+    printf("#width: %d\n", w);
+    printf("#height: %d\n", h);
 
     init_eCAL(argc, argv);
 
