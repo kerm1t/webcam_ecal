@@ -1,8 +1,9 @@
 /**********************************************
  * publish webcam frames to eCAL
  * payload: jpg compressed
- * tested on Ubuntu 20.04
- * v1.0
+ * tested on Ubuntu 20.04, 22.04
+ * v1.1
+ * 10-24-2026 - dramatic speedup using cv::CAP_V4L2 + MJPG encoding
  * 5-27-2025
 */
 
@@ -90,6 +91,7 @@ int main(int argc, char** argv)
     int device = 0;
     int w = 0;
     int h = 0;
+    int fps = 10;
     if (argc > 1) {
         device = atoi(argv[1]);
         printf("#device: %d\n", device);
@@ -102,17 +104,39 @@ int main(int argc, char** argv)
     if (argc > 3) {
         h = atoi(argv[3]);
     }
+    if (argc > 4) {
+        fps = atoi(argv[4]);
+    }
 
     printf("#width: %d\n", w);
     printf("#height: %d\n", h);
+    printf("fps: %d\n", fps);
 
     init_eCAL(argc, argv);
 
-    VideoCapture cap(device); // open the camera <device>
+//    VideoCapture cap(device); // open the camera <device>
+    VideoCapture cap(device, cv::CAP_V4L2); // (5x) faster access + readout
     if(!cap.isOpened())  // check if we succeeded
         return -1;
     cap.set(cv::CAP_PROP_FRAME_WIDTH,  w);
     cap.set(cv::CAP_PROP_FRAME_HEIGHT, h);
+    // YUYV readout is too slow
+    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','J','P','G')); // fast readout
+//    cap.set(cv::CAP_PROP_FOURCC, cv::VideoWriter::fourcc('M','P','G','1')); // fast readout
+    cap.set(cv::CAP_PROP_FPS, fps);
+//    cap.set(cv::CAP_PROP_FPS, 15); // 3840 x 1080 gets to ~12 fps
+//    cap.set(cv::CAP_PROP_FPS, 10); // 1600 x 600, ne das geht auch mit 3840 x 1080
+//    cap.set(cv::CAP_PROP_FPS, 5); //  2560 x 720
+//                                      3840 x 1080, 5 FPS with CAP_V4L2 + MJPG
+//                                                   1 FPS with CAP_V4L2 + MPG1
+//                                                   1 FPS with CAP_V4L2 + YUYV
+//                                                   1 FPS no CAP_V4L2
+// ------------------------------
+// benchmark for china stereocam:
+// 3840   12 fps
+// 2560   18 fps
+// 1600   23 fps
+// ------------------------------
 
     Mat edges;
     for(;;)
